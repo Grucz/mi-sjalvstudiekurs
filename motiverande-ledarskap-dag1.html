@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<!--
+  Självstudiekurs – Motiverande ledarskap, förberedelse inför dag 1.
+  Fristående fil, inga externa beroenden, ingen localStorage.
+  Bygger på: Handbok för ledarhjältar (Edler, Hartelius, Ehrenborg, 2024), kap 1, 2, 4, 5.
+-->
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Motiverande ledarskap – förberedelse inför dag 1</title>
+<style>
+  :root{
+    --ink:#1c2733; --paper:#f3f5f7; --surface:#ffffff;
+    --primary:#27506e; --primary-deep:#1b3b53; --primary-soft:#e4edf2;
+    --accent:#b5701f; --accent-soft:#f5e8d6;
+    --need-aut:#2d6cb0; --need-aut-soft:#e4eef7;
+    --need-kom:#3f8a5c; --need-kom-soft:#e3efe8;
+    --need-till:#bb6a2a; --need-till-soft:#f6e8d8;
+    --good:#3f8a5c; --good-soft:#e3efe8; --warn:#a8492a; --warn-soft:#f6e3da;
+    --muted:#5d6d73; --line:#dbe1e5; --line-soft:#eaeef0;
+    --font-body:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --font-mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --maxw:780px; --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;} *{animation:none!important;transition:none!important;}}
+  .skip{position:absolute;left:-999px;top:0;background:var(--primary);color:#fff;padding:.6rem 1rem;z-index:200;}
+  .skip:focus{left:0;}
+  a,button,select,textarea,[tabindex]{outline:none;}
+  a:focus-visible,button:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:4px;}
+  .wrap{display:flex;min-height:100vh;}
+  .sidebar{width:272px;flex:0 0 272px;background:var(--surface);border-right:1px solid var(--line);position:sticky;top:0;height:100vh;overflow-y:auto;padding:1.4rem 1rem 2rem;}
+  .main{flex:1 1 auto;min-width:0;}
+  .col{max-width:var(--maxw);margin:0 auto;padding:2.2rem 1.6rem 5rem;}
+  .brand{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-family:var(--font-mono);margin-bottom:.5rem;}
+  .brand-title{font-size:1.05rem;font-weight:700;line-height:1.25;margin:0 0 .2rem;}
+  .updated{font-family:var(--font-mono);font-size:.7rem;color:var(--muted);background:var(--accent-soft);border-left:3px solid var(--accent);padding:.5rem .6rem;border-radius:0 6px 6px 0;line-height:1.5;margin:1.2rem 0;}
+  nav.toc{display:flex;flex-direction:column;gap:.12rem;}
+  .toc button{text-align:left;background:none;border:none;cursor:pointer;padding:.55rem .6rem;border-radius:7px;color:var(--ink);font:inherit;display:flex;align-items:baseline;gap:.6rem;width:100%;}
+  .toc button:hover{background:var(--line-soft);}
+  .toc button[aria-current="true"]{background:var(--primary-soft);color:var(--primary-deep);font-weight:600;}
+  .toc .num{font-family:var(--font-mono);font-size:.72rem;color:var(--muted);min-width:1.4em;}
+  .toc .lbl{flex:1;}
+  .toc .done{margin-left:auto;color:var(--good);}
+  .progress-wrap{margin:1.4rem 0 0;}
+  .progress-label{font-family:var(--font-mono);font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem;}
+  .progress-track{height:6px;background:var(--line-soft);border-radius:99px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--good);width:0;transition:width .4s ease;}
+  .saveinfo{margin-top:1rem;font-size:.74rem;color:var(--muted);line-height:1.5;}
+  .saveinfo .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--good);margin-right:.4rem;vertical-align:middle;}
+  .saveinfo.off .dot{background:var(--warn);}
+  .resetbtn{margin-top:.5rem;background:none;border:1px solid var(--line);border-radius:7px;color:var(--primary-deep);font:inherit;font-size:.78rem;padding:.35rem .6rem;cursor:pointer;}
+  .resetbtn:hover{background:var(--line-soft);}
+  .resume{background:var(--good-soft);border:1px solid #bcd9c8;border-radius:var(--radius);padding:.8rem 1rem;margin:0 0 1.4rem;display:none;align-items:center;gap:.8rem;justify-content:space-between;flex-wrap:wrap;}
+  .resume.show{display:flex;}
+  .resume .rt{font-size:.92rem;}
+  .topbar{display:none;}
+  section.view{display:none;}
+  section.view.active{display:block;animation:fade .35s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .eyebrow{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 .5rem;}
+  h1{font-size:2.05rem;line-height:1.14;font-weight:780;letter-spacing:-.015em;margin:.1rem 0 .7rem;}
+  h2{font-size:1.32rem;line-height:1.25;font-weight:700;margin:2.3rem 0 .6rem;}
+  h3{font-size:1.06rem;font-weight:700;margin:1.7rem 0 .4rem;}
+  p{margin:.7rem 0;} .lead{font-size:1.13rem;color:#33424a;line-height:1.5;} strong{font-weight:670;}
+  .mono{font-family:var(--font-mono);}
+  .time{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--font-mono);font-size:.74rem;color:var(--primary-deep);background:var(--primary-soft);border-radius:99px;padding:.25rem .7rem;}
+  a.inline{color:var(--primary-deep);text-decoration:underline;text-underline-offset:2px;}
+  .ref{font-family:var(--font-mono);font-size:.8em;color:var(--muted);}
+  .srcline{font-family:var(--font-mono);font-size:.72rem;color:var(--muted);margin-top:.3rem;}
+  /* Tre grundbehov – signaturmotiv */
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin:1.6rem 0 .4rem;}
+  .pillar{border:1px solid var(--line);border-top:4px solid var(--nc,var(--primary));border-radius:10px;background:var(--surface);padding:.9rem 1rem;}
+  .pillar .pt{font-weight:700;font-size:1rem;}
+  .pillar .pd{font-size:.86rem;color:var(--muted);margin-top:.25rem;line-height:1.45;}
+  .need-aut{--nc:var(--need-aut);} .need-kom{--nc:var(--need-kom);} .need-till{--nc:var(--need-till);}
+  .nb{display:inline-block;font-size:.78rem;font-weight:600;padding:.05rem .5rem;border-radius:99px;border:1px solid var(--nc);color:var(--nc);background:var(--nc-soft,transparent);}
+  .nb.need-aut{--nc:var(--need-aut);--nc-soft:var(--need-aut-soft);}
+  .nb.need-kom{--nc:var(--need-kom);--nc-soft:var(--need-kom-soft);}
+  .nb.need-till{--nc:var(--need-till);--nc-soft:var(--need-till-soft);}
+  .goals{background:var(--primary-soft);border-radius:var(--radius);padding:1rem 1.2rem;margin:1.4rem 0;}
+  .goals .tag{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--primary-deep);margin-bottom:.4rem;}
+  .goals ul{margin:.3rem 0 0;padding-left:1.1rem;} .goals li{margin:.25rem 0;}
+  .callout{border-radius:var(--radius);padding:.95rem 1.1rem;margin:1.3rem 0;border:1px solid;}
+  .callout .h{font-weight:700;margin:0 0 .25rem;}
+  .callout.tip{background:var(--good-soft);border-color:#bcd9c8;} .callout.tip .h{color:var(--good);}
+  .callout.trap{background:var(--warn-soft);border-color:#e2bba9;} .callout.trap .h{color:var(--warn);}
+  .callout.note{background:#eef1f3;border-color:var(--line);} .callout.note .h{color:var(--primary-deep);}
+  blockquote{margin:1rem 0;padding:.5rem 0 .5rem 1rem;border-left:3px solid var(--accent);color:#3a4951;font-style:italic;}
+  .listen{display:flex;gap:1rem;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--primary);border-radius:var(--radius);padding:1.1rem 1.2rem;margin:1.3rem 0;}
+  .listen .ic{font-size:1.4rem;line-height:1;}
+  .listen .lt{font-weight:700;margin:0 0 .2rem;}
+  /* Övningar */
+  .exercise{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:1.2rem;margin:1.8rem 0;}
+  .exercise .x-tag{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem;}
+  .q{margin:0 0 .8rem;font-weight:600;}
+  .opt{display:block;width:100%;text-align:left;background:var(--paper);border:1.5px solid var(--line);border-radius:8px;padding:.7rem .85rem;margin:.4rem 0;cursor:pointer;font:inherit;line-height:1.4;transition:border-color .15s,background .15s;}
+  .opt:hover{border-color:var(--primary);}
+  .opt.correct{border-color:var(--good);background:var(--good-soft);}
+  .opt.wrong{border-color:var(--warn);background:var(--warn-soft);}
+  .opt[disabled]{cursor:default;} .opt .mk{font-family:var(--font-mono);font-weight:700;margin-right:.5em;}
+  .facit{display:none;margin-top:.9rem;border-top:1px dashed var(--line);padding-top:.9rem;font-size:.95rem;}
+  .facit.show{display:block;} .facit .fh{font-weight:700;margin-bottom:.3rem;}
+  .facit ul{margin:.4rem 0 0;padding-left:1.1rem;} .why-wrong{color:#5a3a30;}
+  .btn{display:inline-flex;align-items:center;gap:.4rem;background:var(--primary);color:#fff;border:none;border-radius:8px;padding:.6rem 1.1rem;font:inherit;font-weight:600;cursor:pointer;}
+  .btn:hover{background:var(--primary-deep);}
+  .btn.ghost{background:none;color:var(--primary-deep);border:1.5px solid var(--line);} .btn.ghost:hover{background:var(--line-soft);}
+  .btn-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;}
+  /* Sortering / matchning */
+  .sortgrid{display:grid;gap:1rem;margin:.6rem 0 0;}
+  .pool{display:flex;flex-wrap:wrap;gap:.5rem;}
+  .chip{background:var(--paper);border:1.5px solid var(--line);border-radius:99px;padding:.45rem .85rem;cursor:pointer;font:inherit;font-size:.9rem;}
+  .chip:hover{border-color:var(--primary);} .chip.selected{border-color:var(--accent);background:var(--accent-soft);border-width:2px;font-weight:600;} .chip.placed{opacity:.45;}
+  .buckets{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.7rem;}
+  .bucket{border:1.5px dashed var(--line);border-radius:10px;padding:.7rem;min-height:90px;background:var(--paper);cursor:pointer;}
+  .bucket:hover{border-color:var(--primary);} .bucket.armed{border-color:var(--accent);background:var(--accent-soft);}
+  .bucket .bt{font-weight:700;font-size:.88rem;margin-bottom:.45rem;}
+  .bucket .items{display:flex;flex-direction:column;gap:.35rem;}
+  .placed-item{background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:.35rem .55rem;font-size:.85rem;display:flex;justify-content:space-between;gap:.4rem;}
+  .placed-item.ok{border-color:var(--good);background:var(--good-soft);} .placed-item.no{border-color:var(--warn);background:var(--warn-soft);}
+  .placed-item button{background:none;border:none;color:var(--muted);cursor:pointer;}
+  .live{font-size:.85rem;color:var(--muted);min-height:1.2em;margin-top:.5rem;}
+  /* Ordna sekvens */
+  .order-list{display:flex;flex-direction:column;gap:.5rem;margin:.4rem 0;}
+  .order-item{display:flex;align-items:center;gap:.7rem;background:var(--paper);border:1.5px solid var(--line);border-radius:8px;padding:.55rem .7rem;}
+  .order-item .ot{flex:1;font-size:.92rem;} .order-item.ok{border-color:var(--good);background:var(--good-soft);} .order-item.no{border-color:var(--warn);background:var(--warn-soft);}
+  .order-ctrls{display:flex;flex-direction:column;gap:.15rem;}
+  .order-ctrls button{background:var(--surface);border:1px solid var(--line);border-radius:5px;width:30px;height:24px;cursor:pointer;}
+  .order-ctrls button:disabled{opacity:.35;cursor:default;}
+  /* Fritext */
+  textarea{width:100%;min-height:120px;border:1.5px solid var(--line);border-radius:8px;padding:.7rem;font:inherit;font-size:.95rem;resize:vertical;background:var(--paper);}
+  textarea:focus{border-color:var(--primary);}
+  .model{display:none;margin-top:.9rem;background:var(--primary-soft);border-radius:8px;padding:.9rem 1rem;font-size:.94rem;} .model.show{display:block;}
+  .model .mt{font-weight:700;color:var(--primary-deep);margin-bottom:.3rem;}
+  /* Verktyg (Behovskompass) */
+  .tool{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:1.3rem;margin:1.5rem 0;}
+  .tool .controls{display:grid;gap:1rem;grid-template-columns:1fr 1fr;}
+  .field label{display:block;font-weight:600;font-size:.92rem;margin-bottom:.35rem;}
+  select{width:100%;padding:.6rem .7rem;border:1.5px solid var(--line);border-radius:8px;font:inherit;font-size:.93rem;background:var(--surface);color:var(--ink);}
+  .result{margin-top:1.3rem;border-top:1px solid var(--line);padding-top:1.2rem;}
+  .result .rhead{font-weight:700;margin-bottom:.5rem;}
+  .strat{display:flex;gap:.6rem;align-items:flex-start;border-bottom:1px solid var(--line-soft);padding:.5rem 0;}
+  .strat .sn{font-family:var(--font-mono);color:var(--need,var(--primary));font-weight:700;}
+  .strat .sv{font-size:.93rem;}
+  .verify{margin-top:1.1rem;background:var(--accent-soft);border-left:3px solid var(--accent);border-radius:0 7px 7px 0;padding:.7rem .85rem;font-size:.86rem;color:#6b3f10;}
+  .scorecard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:1.4rem;margin:1.4rem 0;text-align:center;}
+  .scorecard .big{font-family:var(--font-mono);font-size:2.6rem;font-weight:760;color:var(--primary);}
+  .scorecard .lbl{color:var(--muted);font-size:.9rem;}
+  .review-list{text-align:left;margin-top:1rem;} .review-list .ri{padding:.5rem 0;border-top:1px solid var(--line-soft);font-size:.92rem;}
+  .pager{display:flex;justify-content:space-between;gap:1rem;margin-top:2.8rem;padding-top:1.4rem;border-top:1px solid var(--line);}
+  /* Kunskapssammanställning */
+  .ksdoc{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:1.6rem 1.7rem;margin-top:1rem;}
+  .ks-head{border-bottom:2px solid var(--primary);padding-bottom:.7rem;margin-bottom:1.1rem;}
+  .ks-kicker{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  .ks-title{font-size:1.25rem;margin:.25rem 0;font-weight:760;line-height:1.2;}
+  .ks-meta{font-family:var(--font-mono);font-size:.72rem;color:var(--muted);}
+  .ks-callout{background:var(--primary-soft);border-radius:8px;padding:.75rem .95rem;font-size:.92rem;margin-bottom:1.2rem;}
+  .ks-sec{margin:1.1rem 0;} .ks-sec h4{font-size:1rem;margin:0 0 .4rem;color:var(--primary-deep);}
+  .ks-sec ul{margin:.2rem 0;padding-left:1.15rem;} .ks-sec li{margin:.3rem 0;font-size:.92rem;line-height:1.5;}
+  .ks-foot{margin-top:1.3rem;padding-top:.85rem;border-top:1px solid var(--line);font-size:.78rem;color:var(--muted);line-height:1.55;}
+  #printArea{display:none;}
+  @media print{
+    body.summary-ready .wrap,body.summary-ready .topbar,body.summary-ready .m-progress,body.summary-ready .drawer,body.summary-ready .skip{display:none !important;}
+    body.summary-ready #printArea{display:block;}
+    body.summary-ready{background:#fff;color:#000;font-size:11pt;line-height:1.5;}
+    @page{margin:16mm 15mm;}
+    #printArea .ksdoc{border:none;padding:0;margin:0;}
+    #printArea .ks-head{border-bottom:2px solid #000;}
+    #printArea .ks-kicker,#printArea .mono{color:#000 !important;}
+    #printArea .ks-sec{page-break-inside:avoid;}
+    #printArea .ks-callout{background:#eef1f3 !important;border:1px solid #ccc;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+  @media (max-width:840px){
+    .wrap{flex-direction:column;} .sidebar{display:none;}
+    .topbar{display:flex;align-items:center;gap:.8rem;position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--line);padding:.7rem 1rem;}
+    .topbar .mt{font-weight:700;font-size:.95rem;flex:1;} .topbar button{background:none;border:1.5px solid var(--line);border-radius:8px;padding:.45rem .7rem;font:inherit;cursor:pointer;}
+    .m-progress{height:4px;background:var(--line-soft);} .m-progress .f{height:100%;background:var(--good);width:0;}
+    .drawer{display:none;background:var(--surface);border-bottom:1px solid var(--line);padding:.6rem 1rem 1rem;} .drawer.open{display:block;}
+    .col{padding:1.6rem 1.2rem 4rem;} h1{font-size:1.66rem;} .tool .controls{grid-template-columns:1fr;}
+  }
+  @media (max-width:560px){ .pillars{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<a class="skip" href="#innehall">Hoppa till innehållet</a>
+
+<div class="topbar">
+  <button id="menuBtn" aria-expanded="false" aria-controls="drawer">Meny</button>
+  <div class="mt" id="mTitle">Inledning</div>
+</div>
+<div class="m-progress"><div class="f" id="mFill"></div></div>
+<div class="drawer" id="drawer">
+  <nav class="toc" id="tocMobile" aria-label="Avsnitt (mobil)"></nav>
+  <div class="updated">Bygger på <strong>Handbok för ledarhjältar</strong> (Edler, Hartelius, Ehrenborg, 2024), kap 1, 2, 4 och 5. Förberedelse inför dag 1 – ersätter inte kurstillfället.</div>
+</div>
+
+<div class="wrap">
+  <aside class="sidebar">
+    <div class="brand">Förberedelse · Dag 1</div>
+    <p class="brand-title">Motiverande ledarskap</p>
+    <div class="updated">Bygger på <strong>Handbok för ledarhjältar</strong> (Edler, Hartelius, Ehrenborg, 2024), kap 1, 2, 4 och 5. Förberedelse inför dag 1 – ersätter inte kurstillfället.</div>
+    <nav class="toc" id="tocDesktop" aria-label="Avsnitt"></nav>
+    <div class="progress-wrap"><div class="progress-label">Genomfört</div><div class="progress-track"><div class="progress-fill" id="dFill"></div></div></div>
+    <div class="saveinfo" id="saveInfo"><span class="dot"></span><span id="saveText">Dina svar och din progress sparas i den här webbläsaren.</span><br><button type="button" class="resetbtn" id="resetBtn">Rensa sparat och börja om</button></div>
+  </aside>
+
+  <main class="main" id="innehall" tabindex="-1">
+    <div class="col">
+
+      <div class="resume" id="resumeBanner" role="status">
+        <span class="rt" id="resumeText">Välkommen tillbaka – du fortsätter där du slutade.</span>
+        <button type="button" class="resetbtn" id="resumeReset">Börja om från början</button>
+      </div>
+
+      <!-- ===== AVSNITT 0 · INLEDNING ===== -->
+      <section class="view" id="v0" data-title="Inledning">
+        <p class="eyebrow">Förberedelse · Dag 1</p>
+        <h1>Motiverande ledarskap</h1>
+        <p class="lead">Hur du som ledare skapar engagemang, framkallar motivation och för en dialog som håller över tid.</p>
+
+        <div class="pillars">
+          <div class="pillar need-aut"><div class="pt">Autonomi</div><div class="pd">Att uppleva självbestämmande, mening och möjlighet att påverka.</div></div>
+          <div class="pillar need-kom"><div class="pt">Kompetens</div><div class="pd">Att ha det som krävs och kunna bemästra det som är i fokus.</div></div>
+          <div class="pillar need-till"><div class="pt">Tillhörighet</div><div class="pd">Att vara en betydelsefull del av ett meningsfullt sammanhang.</div></div>
+        </div>
+        <p class="srcline">De tre psykologiska grundbehoven återkommer genom hela kursen. Källa: kap 1, s. 22.</p>
+
+        <p>Den här förberedelsen tar omkring tre timmar och består av läsning, ett poddavsnitt (53 min) och korta övningar. Den vilar på <em>Handbok för ledarhjältar</em>, kapitel 1, 2, 4 och 5, och förbereder dig inför dag 1 – den ersätter inte själva kurstillfället, där vi tränar tillämpningen tillsammans.</p>
+
+        <div class="goals"><div class="tag">Dag 1 kretsar kring tre teman</div><ul>
+          <li><strong>Engagera och skapa delaktighet</strong> – utforskande samtalsstil och aktivt lyssnande.</li>
+          <li><strong>Främja motivation och samskapa framåtväg</strong> – framkalla medarbetarens egna idéer och drivkrafter i stället för att lösa åt.</li>
+          <li><strong>Informera och ge återkoppling – i dialog</strong> – så att samarbetet och öppenheten finns kvar, även när samtalet är känsligt.</li>
+        </ul></div>
+
+        <p><span class="time">⏱ ca 10 min</span></p>
+
+        <div class="exercise">
+          <div class="x-tag">Övning · Reflektera och skriv</div>
+          <p class="q">Hur gör du i dag för att medarbetarna ska bli så delaktiga och engagerade som möjligt – i gruppmöten respektive i individuella samtal?</p>
+          <p style="font-size:.92rem;color:var(--muted);margin-top:-.2rem;">Skriv ner dina reflektioner och spara anteckningen. Ta med den till dag 1.</p>
+          <textarea id="ta_ingang" aria-label="Dina reflektioner"></textarea>
+          <div class="btn-row"><button class="btn ghost" data-model="m0">Visa exempel på vad du kan fundera på</button></div>
+          <div class="model" id="m0"><div class="mt">Att fundera vidare på</div>
+            <p>Skiljer det sig åt mellan grupp och enskilt samtal? Hur mycket av tiden talar du, och hur mycket utrymme får medarbetaren? Vad gör du när det blir tyst? När senast bjöd du in till att påverka agendan eller besluten – och vad hände då?</p>
+          </div>
+        </div>
+
+        <div class="pager"><span></span><button class="btn" data-go="1">Nästa: poddavsnittet →</button></div>
+      </section>
+
+      <!-- ===== AVSNITT 1 · PODD ===== -->
+      <section class="view" id="v1" data-title="Poddavsnitt">
+        <p class="eyebrow">Avsnitt 01 · Lyssna</p>
+        <h1>Att öka engagemang med motiverande samtal</h1>
+        <p class="lead">Ett poddavsnitt som introducerar tankesättet innan teorin förklarar det.</p>
+        <p><span class="time">⏱ ca 58 min (53 min lyssning + kort reflektion)</span></p>
+
+        <div class="listen">
+          <div class="ic">🎧</div>
+          <div>
+            <p class="lt">HRnytt-podden (53 min)</p>
+            <p style="margin:.2rem 0;">Avsnittet <em>Att öka engagemang med hjälp av motiverande samtal</em>.</p>
+            <p style="margin:.3rem 0 0;"><a class="inline" href="https://open.spotify.com/episode/4ubqKoTN9tDqxx3vzQzNln" target="_blank" rel="noopener">Öppna avsnittet på Spotify →</a></p>
+          </div>
+        </div>
+
+        <p>Lyssna gärna när du har möjlighet att vara ostörd – på en promenad eller i bilen fungerar bra, eftersom avsnittet är att lyssna på snarare än att läsa. Notera ett par saker du känner igen från din egen vardag.</p>
+
+        <div class="exercise">
+          <div class="x-tag">Övning · Skriv och självrätta</div>
+          <p class="q">Vilket konkret grepp ur avsnittet vill du pröva i ett kommande medarbetarsamtal – och varför just det?</p>
+          <textarea id="ta_podd" aria-label="Ditt svar"></textarea>
+          <div class="btn-row"><button class="btn ghost" data-model="m1">Visa exempelsvar</button></div>
+          <div class="model" id="m1"><div class="mt">Exempelsvar</div>
+            <p>"Jag vill testa att ställa fler öppna frågor och vänta in svaret innan jag själv fyller i. I mina samtal tar jag ofta över och föreslår lösningar för snabbt. Genom att hålla tillbaka och lyssna tror jag att medarbetaren får mer utrymme att tänka högt – och att förslagen då blir hens egna." Ditt svar blir starkare om du knyter greppet till en konkret situation du har framför dig.</p>
+          </div>
+        </div>
+
+        <div class="pager"><button class="btn ghost" data-go="0">← Föregående</button><button class="btn" data-go="2">Nästa: drivkrafterna bakom motivation →</button></div>
+      </section>
+
+      <!-- ===== AVSNITT 2 · SJÄLVBESTÄMMANDETEORIN ===== -->
+      <section class="view" id="v2" data-title="Självbestämmandeteorin">
+        <p class="eyebrow">Avsnitt 02 · Kapitel 1</p>
+        <h1>Vad driver motivation?</h1>
+        <p class="lead">Självbestämmandeteorin förklarar varför vi gör det vi gör – och vad som gör att motivationen håller.</p>
+        <p><span class="time">⏱ ca 22 min</span></p>
+
+        <h2>Självbestämmandeteorin i korthet</h2>
+        <p>Självbestämmandeteorin (SDT) är en av de mest beforskade <strong>motivationsteorierna</strong>, utvecklad av Edward Deci och Richard Ryan. Motivation beskrivs förenklat som en drivkraft som leder till handling – den påverkar vad vi tänker, känner och gör, hur mycket energi vi lägger och hur länge vi håller i.</p>
+        <p>En central poäng är att <strong>ingen är helt omotiverad</strong>. Motivation är inte en personlig egenskap eller en känsla, utan något som uppstår när det finns tillräckligt tydliga skäl och förutsättningar att agera, en tro på att det ger resultat och en stödjande miljö. SDT skiljer också på motivationens <em>kvalitet</em>: drivkrafter som håller i längden bygger på en upplevelse av självbestämmande och mening, inte på yttre press, kontroll eller belöningar.</p>
+        <p class="srcline">Källa: kap 1, s. 13–16.</p>
+
+        <h2>De tre psykologiska grundbehoven</h2>
+        <p>Grundbehoven beskrivs som naturliga, medfödda "näringsämnen" som är avgörande för människors utveckling och välbefinnande. När de tillgodoses i ett sammanhang stärks både måendet och drivkraften. Det räcker att <strong>ett</strong> behov upplevs bristfälligt tillgodosett för att välbefinnandet och utvecklingen ska påverkas negativt – och det gäller oavsett kultur, kön och ålder.</p>
+        <div class="pillars">
+          <div class="pillar need-aut"><div class="pt">Autonomi</div><div class="pd">Självkontroll och möjlighet att påverka inom givna ramar; att förstå syftet och kunna stå för det man gör. Det mest centrala behovet enligt forskningen.</div></div>
+          <div class="pillar need-kom"><div class="pt">Kompetens</div><div class="pd">Tilltro till den egna förmågan att bemästra det som är viktigt för rollen och gruppen. Stärks av strukturer för lärande och uppföljning.</div></div>
+          <div class="pillar need-till"><div class="pt">Tillhörighet</div><div class="pd">En värdefull koppling till människorna runt omkring – att betyda något och vara inkluderad. Bygger på ömsesidighet.</div></div>
+        </div>
+        <p>Ett behovsstödjande arbetsklimat har tydliga samband med engagemang, varaktigt välmående och prestation. Ett klimat som brister i detta tenderar i stället mot passivitet, lågt engagemang och i förlängningen ohälsa.</p>
+        <p class="srcline">Källa: kap 1, s. 22–24.</p>
+
+        <div class="exercise" data-quiz="qSdt">
+          <div class="x-tag">Övning · Flerval</div>
+          <p class="q">Vad kännetecknar enligt SDT motivation av hög kvalitet – den som håller i längden?</p>
+          <div class="opts"></div><div class="facit"></div>
+        </div>
+
+        <div class="exercise">
+          <div class="x-tag">Övning · Matcha</div>
+          <p class="q">Vilket grundbehov pekar varje uttalande tydligast mot? Markera ett uttalande och tryck sedan på rätt behov (fungerar med tangentbord och touch).</p>
+          <div class="sortgrid"><div class="pool" id="sortPool" role="group" aria-label="Uttalanden"></div><div class="buckets" id="sortBuckets"></div></div>
+          <div class="btn-row"><button class="btn" id="sortCheck">Rätta</button><button class="btn ghost" id="sortReset">Börja om</button></div>
+          <p class="live" id="sortLive" aria-live="polite"></p>
+        </div>
+
+        <div class="pager"><button class="btn ghost" data-go="1">← Föregående</button><button class="btn" data-go="3">Nästa: motiverande samtal →</button></div>
+      </section>
+
+      <!-- ===== AVSNITT 3 · MOTIVERANDE SAMTAL ===== -->
+      <section class="view" id="v3" data-title="Motiverande samtal">
+        <p class="eyebrow">Avsnitt 03 · Kapitel 2</p>
+        <h1>Motiverande samtal i ledarrollen</h1>
+        <p class="lead">Ett förhållningssätt och en uppsättning samtalsstrategier som gör att medarbetaren tar mer eget ansvar för sin utveckling.</p>
+        <p><span class="time">⏱ ca 38 min</span></p>
+
+        <h2>Vad är MI – och vad är nyttan?</h2>
+        <p>Motiverande samtal (MI) bygger på William Millers och Stephen Rollnicks arbete och har sitt ursprung i förändringsinriktade samtal. I en ledande roll handlar det framför allt om en <strong>vägledande, coachande stil</strong>: ett aktivt lyssnande som stöttar medarbetarens autonomi – upplevelsen av att kunna påverka och välja hur man gör, inom de ramar som finns.</p>
+        <p>MI behöver inte – och bör inte alltid – användas i sin helhet. I situationer där ledaren måste ta kommandot, eller där en förändring bara gynnar verksamheten och medarbetaren förlorar något, är det <strong>inte lämpligt att framkalla medarbetarens förändringsprat</strong>. Däremot underlättar de relationsfrämjande delarna – MI-andan och aktivt lyssnande – i så gott som alla samtal med medarbetare.</p>
+        <p class="srcline">Källa: kap 2, s. 32–34.</p>
+
+        <h2>MI-andan – grunden i alla samtal</h2>
+        <p>MI-andan är inställningen som bär samtalet, oavsett om det är ett förändringssamtal eller bara en enskild strategi för stunden. Den vilar på fyra principer:</p>
+        <div class="goals"><div class="tag">MI-andans fyra principer</div><ul>
+          <li><strong>Samarbete</strong> – så jämlika möten som möjligt, med medarbetarens kompetens och idéer som utgångspunkt; ledarens expertkunskap är ett komplement.</li>
+          <li><strong>Acceptans</strong> – en icke-dömande inställning, empati och respekt för autonomin; man behöver inte hålla med för att visa acceptans.</li>
+          <li><strong>Självledarskap</strong> – att stötta medarbetaren till självgående och eget ansvar, i tron att hen har de resurser som krävs. Här hör <em>framkallande</em> av förändringsprat hemma.</li>
+          <li><strong>Välvilja</strong> – att visa omtanke i handling och anpassa upplägget efter medarbetarens behov.</li>
+        </ul></div>
+        <p class="srcline">Källa: kap 2, s. 38–39.</p>
+
+        <h2>Aktivt lyssnande</h2>
+        <p>Aktivt lyssnande förmedlas både icke-verbalt (kroppsspråk, ögonkontakt) och verbalt. De fyra verbala samtalsteknikerna är:</p>
+        <h3>Frågor</h3>
+        <p><strong>Öppna frågor</strong> har inget givet svar och låter medarbetaren tänka fritt: "Vad behöver ni för att kunna fokusera på uppgiften?" Till största delen öppna frågor håller medarbetarens perspektiv i fokus. <strong>Slutna frågor</strong> ger ett avgränsat svar och är bra för att stämma av eller följsamt styra vidare – men för många riskerar att passivisera.</p>
+        <h3>Reflektioner</h3>
+        <p>Korta påståenden som speglar tillbaka vad medarbetaren sagt eller menat, med neutralt tonfall. De inleds ofta med <em>du, ni, så</em> eller <em>det</em>: "Du upplever att det är för mycket uppgifter på samma gång." De visar empati och kan lyfta fram förändringsprat.</p>
+        <h3>Bekräftelser</h3>
+        <p>Uttalanden som uppmärksammar medarbetarens <strong>inre resurser</strong> – styrkor, förmågor, ansträngningar, värderingar – så att personen känner sig sedd för den hen är: "Du har förmågan att vaska fram det viktigaste ur stora mängder information." Till skillnad från beröm och positiv feedback, som förstärker en specifik prestation, lyfter bekräftelser resurser som finns hos medarbetaren oavsett om hen levererat just nu.</p>
+        <h3>Summeringar</h3>
+        <p>En längre form av reflektion som återberättar det medarbetaren sagt. De ger överblick, visar att perspektivet tagits emot och kan samla ihop det som talar för att ett mål är viktigt och möjligt.</p>
+        <p class="srcline">Källa: kap 2, s. 42–45.</p>
+
+        <h2>MI-strukturen</h2>
+        <p>MI-samtalet har en struktur i fyra huvuduppgifter som bygger stegvis på varandra, som en trappa. Att vara medveten om strukturen gör det lättare att skapa ett behovsstödjande samtalsklimat.</p>
+        <ul>
+          <li><strong>Engagera</strong> – väck delaktighet och förtroende; en förutsättning för att resten ska få effekt.</li>
+          <li><strong>Fokusera</strong> – enas om vad som är relevant att prata om; tydliggör ramarna.</li>
+          <li><strong>Framkalla</strong> – tydliggör medarbetarens egna skäl och möjligheter; stärk den personliga motivationen.</li>
+          <li><strong>Planera</strong> – formulera mål, enas om en rimlig handlingsplan och uppföljning.</li>
+        </ul>
+        <p class="srcline">Källa: kap 2, s. 40–41.</p>
+
+        <div class="exercise" data-quiz="qMi">
+          <div class="x-tag">Övning · Flerval</div>
+          <p class="q">Vilken av replikerna är en <strong>bekräftelse</strong>?</p>
+          <div class="opts"></div><div class="facit"></div>
+        </div>
+
+        <div class="exercise">
+          <div class="x-tag">Övning · Ordna i rätt följd</div>
+          <p class="q">Lägg MI-strukturens fyra steg i rätt ordning, från samtalets början till dess slut. Använd pilarna.</p>
+          <div class="order-list" id="orderHost"></div>
+          <div class="btn-row"><button class="btn" id="orderCheck">Rätta</button></div>
+          <p class="live" id="orderLive" aria-live="polite"></p>
+        </div>
+
+        <div class="pager"><button class="btn ghost" data-go="2">← Föregående</button><button class="btn" data-go="4">Nästa: ledarskap i dialog →</button></div>
+      </section>
+
+      <!-- ===== AVSNITT 4 · LEDARSKAP I DIALOG ===== -->
+      <section class="view" id="v4" data-title="Ledarskap i dialog">
+        <p class="eyebrow">Avsnitt 04 · Kapitel 4 &amp; 5</p>
+        <h1>Ledarskap i dialog</h1>
+        <p class="lead">Hur delaktighet, information och fokus i praktiken hänger ihop med de tre grundbehoven.</p>
+        <p><span class="time">⏱ ca 32 min</span></p>
+
+        <h2>Delaktighet och samarbete – via struktur, förberedelse och behovsstöd</h2>
+        <p>Delaktighet visar sig som närvaro och engagemang i samtal och möten. Den främjas av ett <strong>behovsstödjande ledarskap</strong>, där kommunikationen bygger på aktivt lyssnande och MI-anda, och av att möten upplevs jämlika. Två praktiska grepp gör stor skillnad:</p>
+        <ul>
+          <li><strong>Struktur.</strong> Rimliga ramar verkar behovsstödjande: de hjälper medarbetaren att avgränsa fokus och fatta egna beslut (autonomi), gör uppgiften hanterbar (kompetens) och tydliggör hur var och en bidrar (tillhörighet). Det är en relevant struktur som samskapas i dialog – inte auktoritär styrning.</li>
+          <li><strong>Förberedelse.</strong> Att medarbetaren får veta vad som ska diskuteras och kan ställa in sig på syftet stärker upplevelsen av kontroll och signalerar: "din närvaro och delaktighet är betydelsefull."</li>
+        </ul>
+        <p>Behovsstödjande ledarskap (kap 5) sorterar konkreta strategier under de tre grundbehoven – från sammanhangsmarkering och att be om lov (autonomi), via tydlig struktur och uppföljning med feedback (kompetens), till att uppmärksamma hur medarbetare bidrar och bjuda in till dialog (tillhörighet). Delaktighet främjas också av <em>hur</em> vi informerar och fokuserar – vilket vi tar nu.</p>
+        <p class="srcline">Källa: kap 4, s. 83–85; kap 5, s. 97–99.</p>
+
+        <h2>Information i dialog</h2>
+        <p>Studier visar att mycket av ledares tid går till att informera – och att samma information ofta måste upprepas, vilket talar för att den inte tas emot fullt ut. Att <strong>informera i dialog</strong> betyder att ge anpassad, vältajmad information så att medarbetarnas behov och engagemang står i centrum. En enkel struktur är <strong>fråga–ge–fråga</strong>:</p>
+        <ul>
+          <li>Presentera ämnet och syftet.</li>
+          <li><strong>Fråga</strong> om förkunskaper och funderingar – och lyssna aktivt.</li>
+          <li><strong>Ge</strong> kort information, anpassad till det du hört. Ett riktmärke är upp till cirka 30 sekunder, sedan en paus eller följdfråga.</li>
+          <li><strong>Fråga</strong> igen vad detta väcker; fyll på vid behov.</li>
+          <li>Avsluta med att låta medarbetarna sätta ord på vad de tar med sig.</li>
+        </ul>
+        <p>Be gärna om lov innan du tillför information ("Är det okej om jag berättar om …?") – men bara om du kan godta ett nej. När viss information inte kan vänta: säg i stället att den är viktig och varför den behöver tas upp nu.</p>
+        <p class="srcline">Källa: kap 4, s. 88–90.</p>
+
+        <h2>Meny-agenda</h2>
+        <p>Meny-agenda är ett samtalsverktyg för att engagera och snabbt ringa in vad som är viktigast att fokusera på – både för att enas om fokus och vid problemlösning och planering. I korthet:</p>
+        <ul>
+          <li>Be om lov att skapa en översikt.</li>
+          <li>Skriv tillsammans ner möjliga fokuspunkter med medarbetarnas egna ord, som ett "smörgåsbord" utan inbördes ordning. Ledaren tillför någon punkt vid behov.</li>
+          <li>Utforska kort vad varje rubrik handlar om – fördjupa dig inte i den första som dyker upp.</li>
+          <li>Prioritera tillsammans ett eller ett par fokus framåt, med respekt för medarbetarnas egna val.</li>
+        </ul>
+        <p class="srcline">Källa: kap 4, s. 87–88.</p>
+
+        <div class="tool">
+          <p class="rhead" style="margin-top:0;">Behovskompass</p>
+          <p style="font-size:.92rem;color:var(--muted);margin-top:0;">Välj ett grundbehov du vill stärka och i vilket sammanhang. Du får konkreta strategier att pröva, hämtade ur kapitel 5.</p>
+          <div class="controls">
+            <div class="field"><label for="toolA">Vilket grundbehov vill du stärka?</label>
+              <select id="toolA">
+                <option value="aut">Autonomi</option>
+                <option value="kom">Kompetens</option>
+                <option value="till">Tillhörighet</option>
+              </select></div>
+            <div class="field"><label for="toolB">I vilket sammanhang?</label>
+              <select id="toolB">
+                <option value="ind">Individuellt samtal</option>
+                <option value="grp">Gruppmöte</option>
+              </select></div>
+          </div>
+          <div class="result" id="toolResult" aria-live="polite"></div>
+        </div>
+
+        <div class="exercise">
+          <div class="x-tag">Övning · Skriv och självrätta</div>
+          <p class="q">Skissa en meny-agenda inför ett kommande möte: skriv tre möjliga fokuspunkter med korta rubriker, och markera vilken du tror att medarbetarna helst vill börja med.</p>
+          <textarea id="ta_meny" aria-label="Din meny-agenda"></textarea>
+          <div class="btn-row"><button class="btn ghost" data-model="m4">Visa exempelsvar</button></div>
+          <div class="model" id="m4"><div class="mt">Exempelsvar</div>
+            <p>Möte med teamet, 45 min. Möjliga rubriker: "Nya rutiner för felanmälan", "Hur vi fördelar de stora ärendena", "Uppföljning av kundenkäten". Min gissning är att de helst börjar med ärendefördelningen, eftersom det berör arbetsbelastningen just nu – men jag ställer frågan och låter dem prioritera. Tänk på att formulera rubrikerna med deras ord när ni gör det live.</p>
+          </div>
+        </div>
+
+        <div class="pager"><button class="btn ghost" data-go="3">← Föregående</button><button class="btn" data-go="5">Nästa: syntes →</button></div>
+      </section>
+
+      <!-- ===== AVSNITT 5 · SYNTES ===== -->
+      <section class="view" id="v5" data-title="Syntes &amp; inför dag 1">
+        <p class="eyebrow">Avsnitt 05 · Syntes</p>
+        <h1>Knyt ihop – inför dag 1</h1>
+        <p class="lead">De tre temana, sammanförda till ett förhållningssätt du kan ta med dig in i kurstillfället.</p>
+        <p><span class="time">⏱ ca 10 min</span></p>
+
+        <p>Allt hänger ihop kring de tre grundbehoven. <strong>Engagera och skapa delaktighet</strong> vilar på autonomi, kompetens och tillhörighet och på ett aktivt lyssnande (kap 1, 4 och 5). <strong>Främja motivation och samskapa framåtväg</strong> handlar om att framkalla medarbetarens egna skäl och möjligheter i stället för att lösa åt – MI-andan och MI-strukturen (kap 2). <strong>Informera och ge återkoppling i dialog</strong> bygger på fråga–ge–fråga och meny-agenda, så att samarbetet finns kvar även i känsliga lägen (kap 4).</p>
+
+        <div class="exercise" data-quiz="qSyn">
+          <div class="x-tag">Övning · Flerval (tillämpning)</div>
+          <p class="q">Flera medarbetare är missnöjda med en förändring som du behöver informera om. Vilket första drag är mest i linje med "information i dialog" och MI-andan?</p>
+          <div class="opts"></div><div class="facit"></div>
+        </div>
+
+        <div class="callout note"><p class="h">Ta med till dag 1</p>
+          <p>Välj <strong>ett</strong> förhållningssätt eller grepp ur förberedelsen som du vill träna praktiskt under kurstillfället. Skriv ner det tillsammans med dina anteckningar från inledningen.</p>
+        </div>
+
+        <p>När du gått igenom materialet, gör slutprovet. Efter det kan du ladda ner en sammanfattning – ett "kom ihåg detta" – att spara.</p>
+
+        <div class="pager"><button class="btn ghost" data-go="4">← Föregående</button><button class="btn" data-go="6">Till slutprovet →</button></div>
+      </section>
+
+      <!-- ===== SLUTPROV ===== -->
+      <section class="view" id="v6" data-title="Slutprov">
+        <p class="eyebrow">Slutprov</p>
+        <h1>Pröva helheten</h1>
+        <p>Sex frågor som täcker förberedelsens kärna. Du kan rätta så ofta du vill.</p>
+        <div id="examHost"></div>
+        <div class="btn-row"><button class="btn" id="examSubmit">Rätta provet</button></div>
+        <div id="examResult"></div>
+        <div id="summaryHost"></div>
+
+        <h2 style="margin-top:3rem;">Källförteckning</h2>
+        <ul class="ref">
+          <li>Edler, K. (red.), Hartelius, E. (red.) &amp; Ehrenborg, L. (2024). <em>Handbok för ledarhjältar – motivationsforskningen som superkraft</em>. Kapitel 1, 2, 4 och 5.</li>
+          <li>HRnytt-podden: avsnittet <em>Att öka engagemang med hjälp av motiverande samtal</em> (53 min).</li>
+        </ul>
+        <div class="callout note" style="margin-top:1.4rem;"><p class="h">Om materialet</p>
+          <p>Innehållet är en sammanfattning av <em>Handbok för ledarhjältar</em>, kapitel 1, 2, 4 och 5, och av poddavsnittet. Det är förberedelse inför dag 1 och ersätter inte kurstillfället, där tillämpningen tränas tillsammans. Begreppen följer källan med två förtydliganden: kursen använder genomgående <em>framkallande</em> och <em>bekräftelser</em>. Exempel och formuleringar är illustrationer – pröva alltid greppen i din egen kontext och justera efter situation och medarbetare.</p>
+        </div>
+
+        <div class="pager"><button class="btn ghost" data-go="5">← Föregående</button><button class="btn ghost" data-go="0">Till inledningen</button></div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<div id="printArea" aria-hidden="true"></div>
+
+<script>
+"use strict";
+(function(){
+  var SECTIONS=[
+    {id:"v0",label:"Inledning"},
+    {id:"v1",label:"Poddavsnitt"},
+    {id:"v2",label:"Självbestämmandeteorin"},
+    {id:"v3",label:"Motiverande samtal"},
+    {id:"v4",label:"Ledarskap i dialog"},
+    {id:"v5",label:"Syntes & inför dag 1"},
+    {id:"v6",label:"Slutprov"}
+  ];
+  var state={current:0, completed:{}};
+
+  /* ---- Spara/återställ i webbläsaren (localStorage) ---- */
+  var STORAGE_KEY="ledarhjaltar_dag1_v1";
+  var canStore=(function(){ try{ var k="__test__"; window.localStorage.setItem(k,"1"); window.localStorage.removeItem(k); return true; }catch(e){ return false; } })();
+  function saveState(){
+    if(!canStore) return;
+    try{
+      var answers={};
+      if(typeof ANSWER_FIELDS!=="undefined"){ ANSWER_FIELDS.forEach(function(f){ var el=document.getElementById(f.id); if(el) answers[f.id]=el.value; }); }
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({current:state.current, completed:state.completed, answers:answers, ts:Date.now()}));
+    }catch(e){}
+  }
+  function loadState(){
+    if(!canStore) return null;
+    try{ var raw=window.localStorage.getItem(STORAGE_KEY); return raw?JSON.parse(raw):null; }catch(e){ return null; }
+  }
+  function clearState(){ try{ window.localStorage.removeItem(STORAGE_KEY); }catch(e){} }
+
+  /* ---- Navigation + progress ---- */
+  function buildToc(host){
+    host.innerHTML="";
+    SECTIONS.forEach(function(s,i){
+      var b=document.createElement("button");
+      b.type="button";
+      b.innerHTML='<span class="num">'+(i<SECTIONS.length-1?String(i+1).padStart(2,"0"):"··")+'</span><span class="lbl">'+s.label+'</span><span class="done" data-done="'+s.id+'"></span>';
+      b.addEventListener("click",function(){ go(i); });
+      host.appendChild(b);
+    });
+  }
+  buildToc(document.getElementById("tocDesktop")); buildToc(document.getElementById("tocMobile"));
+  function go(i){
+    if(i<0||i>=SECTIONS.length) return;
+    if(state.current!==i) state.completed[SECTIONS[state.current].id]=true;
+    state.current=i;
+    SECTIONS.forEach(function(s){ document.getElementById(s.id).classList.remove("active"); });
+    document.getElementById(SECTIONS[i].id).classList.add("active");
+    [document.getElementById("tocDesktop"),document.getElementById("tocMobile")].forEach(function(h){
+      h.querySelectorAll("button").forEach(function(btn,bi){ btn.setAttribute("aria-current",bi===i?"true":"false"); });
+    });
+    document.getElementById("mTitle").textContent=SECTIONS[i].label;
+    document.getElementById("drawer").classList.remove("open");
+    document.getElementById("menuBtn").setAttribute("aria-expanded","false");
+    updateProgress(); window.scrollTo({top:0,behavior:"auto"});
+    document.getElementById("innehall").focus({preventScroll:true});
+    saveState();
+  }
+  function updateProgress(){
+    var pct=Math.round((Object.keys(state.completed).length/SECTIONS.length)*100);
+    document.getElementById("dFill").style.width=pct+"%";
+    document.getElementById("mFill").style.width=pct+"%";
+    document.querySelectorAll("[data-done]").forEach(function(el){ el.textContent=state.completed[el.getAttribute("data-done")]?"✓":""; });
+  }
+  document.querySelectorAll("[data-go]").forEach(function(b){ b.addEventListener("click",function(){ go(parseInt(b.getAttribute("data-go"),10)); }); });
+  document.getElementById("menuBtn").addEventListener("click",function(){
+    var open=document.getElementById("drawer").classList.toggle("open");
+    this.setAttribute("aria-expanded",open?"true":"false");
+  });
+
+  /* ---- Flerval ---- */
+  var QUIZ={
+    qSdt:{
+      good:"Hög motivationskvalitet bygger på en upplevelse av självbestämmande och mening (autonomi), tillsammans med kompetens och tillhörighet. Då håller drivkraften över tid.",
+      opts:[
+        {t:"Att drivkraften bygger på upplevd autonomi, kompetens och tillhörighet", ok:true},
+        {t:"Att den främst drivs av tydliga belöningar, deadlines och beröm", ok:false, why:"Det är yttre, kontrollerande faktorer. De kan tvärtom motverka inre motivation och göra aktiviteten mindre självvald."},
+        {t:"Att medarbetaren helt enkelt är en 'motiverad typ'", ok:false, why:"Motivation är enligt SDT inte en personlig egenskap, utan något som uppstår av skäl, förutsättningar och en stödjande miljö."}
+      ]
+    },
+    qMi:{
+      good:"Bekräftelser uppmärksammar medarbetarens inre resurser – styrkor, förmågor, värderingar – så att personen känner sig sedd för den hen är, oavsett prestationen just nu.",
+      opts:[
+        {t:"\"Bra jobbat med rapporten!\"", ok:false, why:"Det är beröm – en positiv förstärkning av en specifik prestation, inte en bekräftelse av medarbetarens inre resurser."},
+        {t:"\"Du har förmågan att vaska fram det viktigaste ur stora mängder information.\"", ok:true},
+        {t:"\"Är det okej att vi går vidare till nästa punkt?\"", ok:false, why:"Det är en sluten fråga – den stämmer av och styr vidare, men bekräftar ingen resurs."}
+      ]
+    },
+    qSyn:{
+      good:"Att börja med att fråga vad de vet och undrar, lyssna aktivt och visa empati innan du för fram verksamhetens perspektiv är kärnan i fråga–ge–fråga och MI-andan. Då tas informationen emot bättre.",
+      opts:[
+        {t:"Fråga vad de redan vet och undrar, lyssna och visa empati – innan du ger din information", ok:true},
+        {t:"Gå rakt på och förklara beslutet noggrant och i detalj direkt", ok:false, why:"Lång, enkelriktad information tas sällan emot fullt ut och kan trigga försvar. Less is more – varva korta delar med frågor."},
+        {t:"Framkalla deras förändringsprat så att de vill genomföra förändringen", ok:false, why:"När en förändring innebär att medarbetare förlorar något är det inte lämpligt att framkalla förändringsprat. Använd i stället de relationsfrämjande delarna: lyssna och visa respekt för perspektivet."}
+      ]
+    }
+  };
+  document.querySelectorAll("[data-quiz]").forEach(function(box){
+    var data=QUIZ[box.getAttribute("data-quiz")];
+    var optsHost=box.querySelector(".opts"); var facit=box.querySelector(".facit"); var answered=false;
+    data.opts.forEach(function(o,i){
+      var b=document.createElement("button"); b.type="button"; b.className="opt";
+      b.innerHTML='<span class="mk">'+String.fromCharCode(65+i)+'</span>'+o.t;
+      b.addEventListener("click",function(){
+        if(answered) return; answered=true;
+        var all=optsHost.querySelectorAll(".opt"); all.forEach(function(x){ x.setAttribute("disabled","true"); });
+        data.opts.forEach(function(oo,ii){ if(oo.ok) all[ii].classList.add("correct"); });
+        if(!o.ok) b.classList.add("wrong");
+        var html='<div class="fh">'+(o.ok?"Rätt svar.":"Inte riktigt.")+'</div><p>'+data.good+'</p>';
+        var wrongs=data.opts.filter(function(x){return !x.ok && x.why;});
+        if(wrongs.length){ html+='<div class="fh" style="margin-top:.6rem;">Varför de övriga är fel</div><ul>'; wrongs.forEach(function(w){ html+='<li class="why-wrong">'+w.why+'</li>'; }); html+='</ul>'; }
+        facit.innerHTML=html; facit.classList.add("show");
+      });
+      optsHost.appendChild(b);
+    });
+  });
+
+  /* ---- Fritext: visa/dölj exempelsvar ---- */
+  document.querySelectorAll("[data-model]").forEach(function(b){
+    b.addEventListener("click",function(){
+      var m=document.getElementById(b.getAttribute("data-model"));
+      var shown=m.classList.toggle("show"); b.textContent=shown?"Dölj exempelsvar":(b.getAttribute("data-model")==="m0"?"Visa exempel på vad du kan fundera på":"Visa exempelsvar");
+    });
+  });
+
+  /* ---- Sortering/matchning ---- */
+  function buildSorter(cfg){
+    var pool=document.getElementById(cfg.poolId), bucketsHost=document.getElementById(cfg.bucketsId), live=document.getElementById(cfg.liveId);
+    var selected=null, placement={};
+    function render(){
+      pool.innerHTML="";
+      cfg.items.forEach(function(it){
+        var c=document.createElement("button"); c.type="button"; c.className="chip"+(placement[it.id]?" placed":"")+(selected===it.id?" selected":"");
+        c.textContent=it.label; c.setAttribute("aria-pressed",selected===it.id?"true":"false");
+        c.addEventListener("click",function(){ selected=(selected===it.id)?null:it.id; render(); live.textContent=selected?("Vald: "+it.label+". Tryck nu på ett behov."):""; });
+        pool.appendChild(c);
+      });
+      bucketsHost.innerHTML="";
+      cfg.buckets.forEach(function(bk){
+        var d=document.createElement("button"); d.type="button"; d.className="bucket"+(selected?" armed":""); d.setAttribute("aria-label","Placera i "+bk.label);
+        d.innerHTML='<div class="bt">'+bk.label+'</div><div class="items"></div>';
+        var wrap=d.querySelector(".items");
+        cfg.items.forEach(function(it){
+          if(placement[it.id]===bk.id){
+            var pi=document.createElement("div"); pi.className="placed-item"; pi.innerHTML='<span>'+it.label+'</span>';
+            var rm=document.createElement("button"); rm.type="button"; rm.textContent="✕"; rm.setAttribute("aria-label","Ta bort "+it.label);
+            rm.addEventListener("click",function(e){ e.stopPropagation(); delete placement[it.id]; render(); });
+            pi.appendChild(rm); wrap.appendChild(pi);
+          }
+        });
+        d.addEventListener("click",function(){
+          if(!selected){ live.textContent="Markera först ett uttalande."; return; }
+          placement[selected]=bk.id; var lab=cfg.items.filter(function(x){return x.id===selected;})[0].label;
+          selected=null; render(); live.textContent=lab+" placerad.";
+        });
+        bucketsHost.appendChild(d);
+      });
+    }
+    document.getElementById(cfg.checkId).addEventListener("click",function(){
+      var placed=0,ok=0; cfg.items.forEach(function(it){ if(placement[it.id]) placed++; });
+      if(placed<cfg.items.length){ live.textContent="Placera alla uttalanden ("+placed+"/"+cfg.items.length+")."; return; }
+      bucketsHost.querySelectorAll(".bucket").forEach(function(bEl,bi){
+        bEl.querySelectorAll(".placed-item").forEach(function(pi){
+          var it=cfg.items.filter(function(x){return x.label===pi.querySelector("span").textContent;})[0];
+          var correct=it.answer===cfg.buckets[bi].id; pi.classList.add(correct?"ok":"no"); if(correct) ok++;
+        });
+      });
+      live.textContent= ok===cfg.items.length ? "Allt rätt placerat." : (ok+" av "+cfg.items.length+" rätt. Flytta de felmarkerade och rätta igen.");
+    });
+    document.getElementById(cfg.resetId).addEventListener("click",function(){ placement={}; selected=null; render(); live.textContent=""; });
+    render();
+  }
+  buildSorter({
+    poolId:"sortPool", bucketsId:"sortBuckets", liveId:"sortLive", checkId:"sortCheck", resetId:"sortReset",
+    items:[
+      {id:"i1",label:"\"Jag fattar inte varför vi ska göra det här – vad är poängen?\"",answer:"aut"},
+      {id:"i2",label:"\"Jag vill kunna lägga upp arbetet på mitt eget sätt.\"",answer:"aut"},
+      {id:"i3",label:"\"Jag är osäker på om jag klarar den nya uppgiften.\"",answer:"kom"},
+      {id:"i4",label:"\"Jag känner mig lite utanför i teamet just nu.\"",answer:"till"}
+    ],
+    buckets:[{id:"aut",label:"Autonomi"},{id:"kom",label:"Kompetens"},{id:"till",label:"Tillhörighet"}]
+  });
+
+  /* ---- Ordna sekvens (MI-strukturen) ---- */
+  function buildOrder(cfg){
+    var host=document.getElementById(cfg.hostId), live=document.getElementById(cfg.liveId);
+    var order=cfg.start.slice();
+    function render(){
+      host.innerHTML="";
+      order.forEach(function(id,idx){
+        var it=cfg.items.filter(function(x){return x.id===id;})[0];
+        var row=document.createElement("div"); row.className="order-item";
+        var ot=document.createElement("span"); ot.className="ot"; ot.textContent=(idx+1)+". "+it.label; row.appendChild(ot);
+        var ctr=document.createElement("div"); ctr.className="order-ctrls";
+        var up=document.createElement("button"); up.type="button"; up.textContent="▲"; up.setAttribute("aria-label","Flytta upp"); up.disabled=idx===0;
+        var dn=document.createElement("button"); dn.type="button"; dn.textContent="▼"; dn.setAttribute("aria-label","Flytta ned"); dn.disabled=idx===order.length-1;
+        up.addEventListener("click",function(){ var t=order[idx-1]; order[idx-1]=order[idx]; order[idx]=t; render(); });
+        dn.addEventListener("click",function(){ var t=order[idx+1]; order[idx+1]=order[idx]; order[idx]=t; render(); });
+        ctr.appendChild(up); ctr.appendChild(dn); row.appendChild(ctr);
+        host.appendChild(row);
+      });
+    }
+    document.getElementById(cfg.checkId).addEventListener("click",function(){
+      var ok=0, rows=host.querySelectorAll(".order-item");
+      rows.forEach(function(row,idx){
+        row.classList.remove("ok","no");
+        var correct=order[idx]===cfg.correct[idx];
+        row.classList.add(correct?"ok":"no"); if(correct) ok++;
+      });
+      live.textContent= ok===cfg.correct.length ? "Rätt ordning." : (ok+" av "+cfg.correct.length+" på rätt plats. Justera och rätta igen.");
+    });
+    render();
+  }
+  buildOrder({
+    hostId:"orderHost", liveId:"orderLive", checkId:"orderCheck",
+    items:[
+      {id:"engagera",label:"Engagera – väck delaktighet och förtroende"},
+      {id:"fokusera",label:"Fokusera – enas om vad som är relevant"},
+      {id:"framkalla",label:"Framkalla – tydliggör medarbetarens egna skäl"},
+      {id:"planera",label:"Planera – mål, handlingsplan och uppföljning"}
+    ],
+    start:["framkalla","engagera","planera","fokusera"],
+    correct:["engagera","fokusera","framkalla","planera"]
+  });
+
+  /* ---- Behovskompass ---- */
+  var STRAT={
+    aut:{name:"Autonomi", color:"var(--need-aut)", list:[
+      "Sammanhangsmarkering: tydliggör vad, varför och hur – så att syftet blir begripligt.",
+      "Be om lov innan du ger råd eller information, och uppmärksamma var medarbetaren kan välja själv.",
+      "Undvik kontrollerande språk; lyssna efter och framkalla medarbetarens egna skäl."
+    ]},
+    kom:{name:"Kompetens", color:"var(--need-kom)", list:[
+      "Bidra med en tydlig, relevant och realistisk struktur: förväntningar, mål och handlingsplan.",
+      "Följ upp med feedback i dialog, och ge utrymme för självreflektion.",
+      "Framkalla resursmedvetenhet med bekräftelser som lyfter styrkor och tidigare lärdomar."
+    ]},
+    till:{name:"Tillhörighet", color:"var(--need-till)", list:[
+      "Uppmärksamma konkret hur medarbetaren bidrar till gruppen och verksamheten.",
+      "Visa omtanke och följ upp – ge tid att lära känna varandra.",
+      "Bjud in till dialog vid information och problemlösning, och lyft värdet av olikheter."
+    ]}
+  };
+  var CTX={
+    ind:"Individuellt samtal: håll det personligt och låt medarbetaren komma till tals först – be om lov och lyssna innan du tillför.",
+    grp:"Gruppmöte: fördela ordet så att fler kommer till tals, och samskapa fokus (t.ex. med meny-agenda) innan ni går in på detaljer."
+  };
+  function toolRender(){
+    var a=document.getElementById("toolA").value, b=document.getElementById("toolB").value;
+    var s=STRAT[a];
+    var html='<div class="rhead" style="color:'+s.color+'">Strategier som stärker '+s.name.toLowerCase()+'</div>';
+    s.list.forEach(function(t,i){
+      html+='<div class="strat" style="--need:'+s.color+'"><span class="sn">'+(i+1)+'</span><span class="sv">'+t+'</span></div>';
+    });
+    html+='<p style="font-size:.9rem;color:var(--muted);margin:.8rem 0 0;">'+CTX[b]+'</p>';
+    html+='<div class="verify">Det här är ett lärandestöd och en minneskarta, inte en mall att följa slaviskt. Pröva greppen och anpassa dem efter situationen och den enskilda medarbetaren.</div>';
+    document.getElementById("toolResult").innerHTML=html;
+  }
+  document.getElementById("toolA").addEventListener("change",toolRender);
+  document.getElementById("toolB").addEventListener("change",toolRender);
+  toolRender();
+
+  /* ---- Slutprov ---- */
+  var EXAM=[
+    {q:"Vilka är de tre psykologiska grundbehoven enligt självbestämmandeteorin?", opts:["Autonomi, kompetens och tillhörighet","Lön, status och trygghet","Beröm, belöning och befordran"], ok:0, sec:"Avsnitt 02 – Självbestämmandeteorin"},
+    {q:"Motivation av hög kvalitet, som håller i längden, bygger enligt SDT framför allt på …", opts:["… självbestämmande och mening (autonomi)","… yttre press och kontroll","… att medarbetaren är en motiverad personlighet"], ok:0, sec:"Avsnitt 02 – Självbestämmandeteorin"},
+    {q:"Vilka principer ingår i MI-andan?", opts:["Samarbete, acceptans, självledarskap och välvilja","Tydlighet, kontroll, uppföljning och belöning","Empati, sympati, antipati och apati"], ok:0, sec:"Avsnitt 03 – Motiverande samtal"},
+    {q:"Vad utmärker en bekräftelse, jämfört med beröm?", opts:["Den uppmärksammar medarbetarens inre resurser, oavsett prestationen just nu","Den är alltid kopplad till en specifik, väl utförd uppgift","Den är samma sak som en sluten kontrollfråga"], ok:0, sec:"Avsnitt 03 – Motiverande samtal"},
+    {q:"Vilken är MI-strukturens ordning?", opts:["Engagera → fokusera → framkalla → planera","Planera → framkalla → fokusera → engagera","Fokusera → planera → engagera → framkalla"], ok:0, sec:"Avsnitt 03 – Motiverande samtal"},
+    {q:"Vad innebär 'information i dialog'?", opts:["Korta informationsdelar varvade med frågor (fråga–ge–fråga), anpassat till behoven","Att ge all information samlat och så detaljerat som möjligt på en gång","Att undvika att informera och i stället bara lyssna"], ok:0, sec:"Avsnitt 04 – Ledarskap i dialog"}
+  ];
+  var examHost=document.getElementById("examHost");
+  EXAM.forEach(function(item,qi){
+    var box=document.createElement("div"); box.className="exercise";
+    var opts='<div class="opts">';
+    item.opts.forEach(function(o,oi){ opts+='<label class="opt" style="display:flex;gap:.5rem;align-items:flex-start;"><input type="radio" name="ex'+qi+'" value="'+oi+'" style="margin-top:.25rem;"> <span>'+o+'</span></label>'; });
+    opts+='</div>';
+    box.innerHTML='<div class="x-tag">Fråga '+(qi+1)+' av '+EXAM.length+'</div><p class="q">'+item.q+'</p>'+opts+'<div class="facit"></div>';
+    examHost.appendChild(box);
+  });
+  document.getElementById("examSubmit").addEventListener("click",function(){
+    var score=0, missed=[], boxes=examHost.querySelectorAll(".exercise");
+    EXAM.forEach(function(item,qi){
+      var box=boxes[qi], chosen=box.querySelector('input[name="ex'+qi+'"]:checked'), labels=box.querySelectorAll(".opt");
+      labels.forEach(function(l){ l.classList.remove("correct","wrong"); }); labels[item.ok].classList.add("correct");
+      if(chosen){ var v=parseInt(chosen.value,10); if(v===item.ok) score++; else { labels[v].classList.add("wrong"); missed.push(item.sec); } } else missed.push(item.sec);
+      box.querySelector(".facit").innerHTML='<div class="fh">Rätt svar: '+item.opts[item.ok]+'</div>'; box.querySelector(".facit").classList.add("show");
+    });
+    var uniq=[]; missed.forEach(function(s){ if(uniq.indexOf(s)<0) uniq.push(s); });
+    var html='<div class="scorecard"><div class="big">'+score+' / '+EXAM.length+'</div><div class="lbl">rätt svar</div>';
+    if(uniq.length){ html+='<div class="review-list"><strong>Värt att repetera:</strong>'; uniq.forEach(function(s){ html+='<div class="ri">'+s+'</div>'; }); html+='</div>'; }
+    else html+='<p style="margin:.8rem 0 0;">Full pott. Du är väl rustad inför dag 1.</p>';
+    html+='</div>';
+    document.getElementById("examResult").innerHTML=html;
+    state.completed[SECTIONS[SECTIONS.length-1].id]=true; updateProgress(); saveState();
+    renderSummary();
+    document.getElementById("examResult").scrollIntoView({behavior:"auto",block:"start"});
+  });
+
+  /* ---- Kunskapssammanställning ("kom ihåg detta") + PDF ---- */
+  var ANSWER_FIELDS=[
+    {id:"ta_ingang",label:"Ingångsreflektion – delaktighet och engagemang"},
+    {id:"ta_podd",label:"Efter poddavsnittet – ett grepp att pröva"},
+    {id:"ta_meny",label:"Skiss på meny-agenda"}
+  ];
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function collectAnswers(){
+    var out=[];
+    ANSWER_FIELDS.forEach(function(f){
+      var el=document.getElementById(f.id);
+      if(el && el.value && el.value.trim()){ out.push({label:f.label, text:el.value.trim()}); }
+    });
+    return out;
+  }
+  function answersHtml(answers){
+    if(!answers.length){
+      return '<div class="ks-sec"><h4>Dina svar under kursen</h4><ul><li>Inga fritextsvar ifyllda än. Skriv i reflektionsrutorna i kursen så följer svaren med i nedladdningen.</li></ul></div>';
+    }
+    var h='<div class="ks-sec"><h4>Dina svar under kursen</h4>';
+    answers.forEach(function(a){
+      h+='<div style="margin:.5rem 0 .9rem;"><div style="font-weight:600;font-size:.92rem;">'+esc(a.label)+'</div>'
+       + '<div style="font-size:.92rem;white-space:pre-wrap;border-left:2px solid #c9d2d7;padding-left:.7rem;margin-top:.25rem;color:#33424a;">'+esc(a.text)+'</div></div>';
+    });
+    h+='</div>';
+    return h;
+  }
+  function ksInnerHtml(answers){
+    var d=new Date().toLocaleDateString("sv-SE");
+    return ''
+    + '<div class="ksdoc">'
+    +   '<div class="ks-head"><div class="ks-kicker">Motiverande ledarskap · förberedelse dag 1</div><h3 class="ks-title">Kom ihåg detta</h3>'
+    +     '<div class="ks-meta">Kunskapssammanställning · bygger på Handbok för ledarhjältar (2024), kap 1, 2, 4, 5 · utskriven '+d+'</div></div>'
+    +   '<div class="ks-callout">Motivation som håller bygger på tre psykologiska grundbehov: <strong>autonomi</strong> (självbestämmande och mening), <strong>kompetens</strong> (att bemästra det viktiga) och <strong>tillhörighet</strong> (att höra till ett meningsfullt sammanhang).</div>'
+    +   '<div class="ks-sec"><h4>MI-andan – grunden i alla samtal</h4><ul>'
+    +     '<li><strong>Samarbete</strong> – jämlika möten, medarbetarens idéer som utgångspunkt.</li>'
+    +     '<li><strong>Acceptans</strong> – icke-dömande, empati, respekt för autonomin.</li>'
+    +     '<li><strong>Självledarskap</strong> – stötta till eget ansvar; här hör framkallande hemma.</li>'
+    +     '<li><strong>Välvilja</strong> – omtanke i handling, anpassa efter behov.</li>'
+    +   '</ul></div>'
+    +   '<div class="ks-sec"><h4>Aktivt lyssnande</h4><ul>'
+    +     '<li><strong>Frågor</strong> – till största delen öppna; slutna för att stämma av.</li>'
+    +     '<li><strong>Reflektioner</strong> – spegla tillbaka det medarbetaren sagt eller menat.</li>'
+    +     '<li><strong>Bekräftelser</strong> – uppmärksamma inre resurser och styrkor (skiljer sig från beröm).</li>'
+    +     '<li><strong>Summeringar</strong> – samla ihop, ge överblick, förstärk det som bär framåt.</li>'
+    +   '</ul></div>'
+    +   '<div class="ks-sec"><h4>MI-strukturen (trappa)</h4><ul><li><strong>Engagera → Fokusera → Framkalla → Planera.</strong> Stegen bygger på varandra.</li></ul></div>'
+    +   '<div class="ks-sec"><h4>Ledarskap i dialog</h4><ul>'
+    +     '<li><strong>Information i dialog:</strong> fråga–ge–fråga; korta delar (riktmärke ca 30 sek), be om lov, lyssna emellan.</li>'
+    +     '<li><strong>Meny-agenda:</strong> be om lov → samla rubriker med deras ord → utforska kort → prioritera tillsammans.</li>'
+    +     '<li><strong>Struktur och förberedelse</strong> verkar behovsstödjande och främjar delaktighet.</li>'
+    +   '</ul></div>'
+    +   '<div class="ks-sec"><h4>En fråga att alltid bära med dig</h4><ul><li>Hur går det vi fokuserar på i linje med medarbetarens välmående och behov? Vid intressekonflikt: gå varsamt fram och framkalla inte förändringsprat.</li></ul></div>'
+    +   answersHtml(answers)
+    +   '<div class="ks-foot">Förberedelse inför dag 1 – ersätter inte kurstillfället. Exempel är illustrationer; pröva och anpassa i din egen kontext. Källor: Handbok för ledarhjältar (Edler, Hartelius, Ehrenborg, 2024), kap 1, 2, 4, 5; HRnytt-podden.</div>'
+    + '</div>';
+  }
+  /* Utskriftsvänligt fristående dokument (öppnas i ny flik och kan sparas som PDF). */
+  var PRINT_CSS=''
+    + 'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#1c2733;line-height:1.55;max-width:720px;margin:24px auto;padding:0 18px;font-size:15px;}'
+    + '.ksdoc{}'
+    + '.ks-head{border-bottom:2px solid #27506e;padding-bottom:.6rem;margin-bottom:1rem;}'
+    + '.ks-kicker{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#b5701f;}'
+    + '.ks-title{font-size:1.4rem;margin:.25rem 0;}'
+    + '.ks-meta{font-size:.74rem;color:#5d6d73;}'
+    + '.ks-callout{background:#e4edf2;border-radius:8px;padding:.7rem .9rem;font-size:.92rem;margin-bottom:1rem;}'
+    + '.ks-sec{margin:1rem 0;page-break-inside:avoid;} .ks-sec h4{font-size:1rem;margin:0 0 .35rem;color:#1b3b53;}'
+    + '.ks-sec ul{margin:.2rem 0;padding-left:1.15rem;} .ks-sec li{margin:.3rem 0;font-size:.92rem;}'
+    + '.ks-foot{margin-top:1.2rem;padding-top:.8rem;border-top:1px solid #dbe1e5;font-size:.76rem;color:#5d6d73;}'
+    + '.noprint{text-align:center;margin:1.4rem 0;}'
+    + '.noprint button{background:#27506e;color:#fff;border:none;border-radius:8px;padding:.6rem 1.2rem;font-size:1rem;cursor:pointer;}'
+    + '@media print{.noprint{display:none;} body{margin:0;max-width:none;} @page{margin:16mm 15mm;}}';
+  function buildPrintDoc(answers){
+    return '<!DOCTYPE html><html lang="sv"><head><meta charset="UTF-8">'
+    + '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+    + '<title>Kom ihåg detta – Motiverande ledarskap</title>'
+    + '<style>'+PRINT_CSS+'</style></head><body>'
+    + ksInnerHtml(answers)
+    + '<div class="noprint"><button type="button" onclick="window.print()">Skriv ut / spara som PDF</button></div>'
+    + '<scr'+'ipt>window.addEventListener("load",function(){setTimeout(function(){try{window.print();}catch(e){}},350);});<\/scr'+'ipt>'
+    + '</body></html>';
+  }
+  function downloadSummary(){
+    var answers=collectAnswers();
+    var win=window.open("","_blank");
+    if(win){
+      win.document.open(); win.document.write(buildPrintDoc(answers)); win.document.close(); win.focus();
+    } else {
+      /* Reserv: om nytt fönster blockeras, skriv ut sidan direkt. */
+      document.getElementById("printArea").innerHTML=ksInnerHtml(answers);
+      document.body.classList.add("summary-ready");
+      window.onafterprint=function(){ document.body.classList.remove("summary-ready"); };
+      window.print();
+    }
+  }
+  function renderSummary(){
+    var host=document.getElementById("summaryHost");
+    host.innerHTML=''
+    + '<h2 style="margin-top:2.6rem;">Kunskapssammanställning</h2>'
+    + '<p>En kondenserad sammanfattning av förberedelsens innehåll – inklusive dina egna fritextsvar – som du kan spara vid skrivbordet.</p>'
+    + '<div class="btn-row"><button class="btn" id="ksDownload">Ladda ner som PDF</button></div>'
+    + '<p class="ref" style="margin:.4rem 0 0;">Knappen öppnar en utskriftsvänlig sida i en ny flik – välj "Spara som PDF" i utskriftsdialogen. Dina ifyllda svar tas med.</p>'
+    + ksInnerHtml(collectAnswers());
+    document.getElementById("ksDownload").addEventListener("click",downloadSummary);
+  }
+
+  /* ---- Init ---- */
+  // Autosparning av fritextsvar medan man skriver.
+  ANSWER_FIELDS.forEach(function(f){ var el=document.getElementById(f.id); if(el){ el.addEventListener("input",saveState); } });
+
+  // Reset-hantering.
+  function resetCourse(){
+    clearState();
+    state.completed={};
+    ANSWER_FIELDS.forEach(function(f){ var el=document.getElementById(f.id); if(el) el.value=""; });
+    document.getElementById("resumeBanner").classList.remove("show");
+    go(0); updateProgress();
+  }
+  var resetBtn=document.getElementById("resetBtn");
+  if(resetBtn){ resetBtn.addEventListener("click",function(){ if(window.confirm("Vill du rensa dina sparade svar och din progress och börja om från början?")) resetCourse(); }); }
+  var resumeReset=document.getElementById("resumeReset");
+  if(resumeReset){ resumeReset.addEventListener("click",function(){ if(window.confirm("Vill du rensa dina sparade svar och din progress och börja om från början?")) resetCourse(); }); }
+
+  // Statusrad i sidofältet.
+  var saveInfo=document.getElementById("saveInfo"), saveText=document.getElementById("saveText");
+  if(!canStore && saveInfo){
+    saveInfo.classList.add("off");
+    saveText.textContent="Sparas inte i den här vyn. Ladda ner filen och öppna den i din webbläsare, så sparas svar och progress automatiskt.";
+    var rb=document.getElementById("resetBtn"); if(rb) rb.style.display="none";
+  }
+
+  // Återställ tidigare session om sådan finns.
+  var saved=loadState();
+  if(saved && canStore){
+    state.completed=saved.completed||{};
+    if(saved.answers){ ANSWER_FIELDS.forEach(function(f){ var el=document.getElementById(f.id); if(el && typeof saved.answers[f.id]==="string") el.value=saved.answers[f.id]; }); }
+    var idx=(typeof saved.current==="number" && saved.current>=0 && saved.current<SECTIONS.length)?saved.current:0;
+    state.current=idx;            // sätt först så att go() inte felaktigt markerar avsnitt som klart
+    go(idx); updateProgress();
+    if(idx>0 || Object.keys(state.completed).length>0){
+      var banner=document.getElementById("resumeBanner");
+      document.getElementById("resumeText").textContent="Välkommen tillbaka. Du fortsätter i avsnittet \u201d"+SECTIONS[idx].label+"\u201d, och dina tidigare svar finns kvar.";
+      banner.classList.add("show");
+    }
+  } else {
+    go(0); state.completed={}; updateProgress();
+  }
+})();
+</script>
+</body>
+</html>
