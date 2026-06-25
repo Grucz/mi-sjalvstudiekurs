@@ -147,6 +147,14 @@
   textarea:focus{border-color:var(--primary);}
   .model{display:none;margin-top:.9rem;background:var(--primary-soft);border-radius:8px;padding:.9rem 1rem;font-size:.94rem;} .model.show{display:block;}
   .model .mt{font-weight:700;color:var(--primary-deep);margin-bottom:.3rem;}
+  .micbar{display:flex;align-items:center;gap:.6rem;margin:.55rem 0 0;flex-wrap:wrap;}
+  .micbtn{display:inline-flex;align-items:center;gap:.45rem;background:none;border:1.5px solid var(--line);border-radius:8px;color:var(--primary-deep);font:inherit;font-size:.85rem;padding:.42rem .8rem;cursor:pointer;}
+  .micbtn:hover{background:var(--line-soft);}
+  .micbtn.on{background:var(--warn-soft);border-color:var(--warn);color:var(--warn);}
+  .micbtn .micic{width:15px;height:15px;}
+  .micbtn.on .micic{animation:pulse 1s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+  .micstatus{font-size:.8rem;color:var(--muted);}
   /* Verktyg (Behovskompass) */
   .tool{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:1.3rem;margin:1.5rem 0;}
   .tool .controls{display:grid;gap:1rem;grid-template-columns:1fr 1fr;}
@@ -808,10 +816,13 @@
     {q:"Vad innebär 'information i dialog'?", opts:["Korta informationsdelar varvade med frågor (fråga–ge–fråga), anpassat till behoven","Att ge all information samlat och så detaljerat som möjligt på en gång","Att undvika att informera och i stället bara lyssna"], ok:0, sec:"Avsnitt 04 – Ledarskap i dialog"}
   ];
   var examHost=document.getElementById("examHost");
+  function shuffle(arr){ for(var k=arr.length-1;k>0;k--){ var j=Math.floor(Math.random()*(k+1)); var t=arr[k]; arr[k]=arr[j]; arr[j]=t; } return arr; }
   EXAM.forEach(function(item,qi){
+    item._opts=shuffle(item.opts.map(function(t,i){ return {t:t, correct:i===item.ok}; }));
+    item._ok=0; item._opts.forEach(function(o,i){ if(o.correct) item._ok=i; });
     var box=document.createElement("div"); box.className="exercise";
     var opts='<div class="opts">';
-    item.opts.forEach(function(o,oi){ opts+='<label class="opt" style="display:flex;gap:.5rem;align-items:flex-start;"><input type="radio" name="ex'+qi+'" value="'+oi+'" style="margin-top:.25rem;"> <span>'+o+'</span></label>'; });
+    item._opts.forEach(function(o,oi){ opts+='<label class="opt" style="display:flex;gap:.5rem;align-items:flex-start;"><input type="radio" name="ex'+qi+'" value="'+oi+'" style="margin-top:.25rem;"> <span>'+o.t+'</span></label>'; });
     opts+='</div>';
     box.innerHTML='<div class="x-tag">Fråga '+(qi+1)+' av '+EXAM.length+'</div><p class="q">'+item.q+'</p>'+opts+'<div class="facit"></div>';
     examHost.appendChild(box);
@@ -820,9 +831,9 @@
     var score=0, missed=[], boxes=examHost.querySelectorAll(".exercise");
     EXAM.forEach(function(item,qi){
       var box=boxes[qi], chosen=box.querySelector('input[name="ex'+qi+'"]:checked'), labels=box.querySelectorAll(".opt");
-      labels.forEach(function(l){ l.classList.remove("correct","wrong"); }); labels[item.ok].classList.add("correct");
-      if(chosen){ var v=parseInt(chosen.value,10); if(v===item.ok) score++; else { labels[v].classList.add("wrong"); missed.push(item.sec); } } else missed.push(item.sec);
-      box.querySelector(".facit").innerHTML='<div class="fh">Rätt svar: '+item.opts[item.ok]+'</div>'; box.querySelector(".facit").classList.add("show");
+      labels.forEach(function(l){ l.classList.remove("correct","wrong"); }); labels[item._ok].classList.add("correct");
+      if(chosen){ var v=parseInt(chosen.value,10); if(v===item._ok) score++; else { labels[v].classList.add("wrong"); missed.push(item.sec); } } else missed.push(item.sec);
+      box.querySelector(".facit").innerHTML='<div class="fh">Rätt svar: '+item._opts[item._ok].t+'</div>'; box.querySelector(".facit").classList.add("show");
     });
     var uniq=[]; missed.forEach(function(s){ if(uniq.indexOf(s)<0) uniq.push(s); });
     var html='<div class="scorecard"><div class="big">'+score+' / '+EXAM.length+'</div><div class="lbl">rätt svar</div>';
@@ -953,6 +964,46 @@
       frame.innerHTML=""; frame.appendChild(ifr);
     });
   });
+
+  /* ---- Röstinmatning i fritextrutor (svenska) ---- */
+  (function(){
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var MIC_SVG='<svg class="micic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"></rect><path d="M5 10a7 7 0 0 0 14 0"></path><line x1="12" y1="17" x2="12" y2="21"></line></svg>';
+    if(!SR) return; // Webbläsaren stödjer inte taligenkänning – hoppa över knappen.
+    ANSWER_FIELDS.forEach(function(f){
+      var ta=document.getElementById(f.id);
+      if(!ta) return;
+      var bar=document.createElement("div"); bar.className="micbar";
+      var btn=document.createElement("button"); btn.type="button"; btn.className="micbtn";
+      btn.innerHTML=MIC_SVG+'<span class="lbl">Tala in svar</span>';
+      var status=document.createElement("span"); status.className="micstatus";
+      bar.appendChild(btn); bar.appendChild(status);
+      ta.insertAdjacentElement("afterend", bar);
+      var rec=null, listening=false, base="";
+      function setLabel(t){ btn.querySelector(".lbl").textContent=t; }
+      btn.addEventListener("click",function(){
+        if(listening){ if(rec){ try{ rec.stop(); }catch(e){} } return; }
+        try{ rec=new SR(); }catch(e){ status.textContent="Röstinmatning kunde inte startas."; return; }
+        rec.lang="sv-SE"; rec.interimResults=true; rec.continuous=true;
+        base=ta.value;
+        rec.onstart=function(){ listening=true; btn.classList.add("on"); setLabel("Lyssnar – tryck för att stoppa"); status.textContent=""; };
+        rec.onerror=function(ev){
+          status.textContent = (ev && ev.error==="not-allowed") ? "Mikrofonen blockerades. Tillåt mikrofon och försök igen." : "Röstinmatningen avbröts.";
+        };
+        rec.onend=function(){ listening=false; btn.classList.remove("on"); setLabel("Tala in svar"); ta.value=base; saveState(); };
+        rec.onresult=function(ev){
+          var finalTxt="", interim="";
+          for(var i=ev.resultIndex;i<ev.results.length;i++){
+            var seg=ev.results[i][0].transcript;
+            if(ev.results[i].isFinal) finalTxt+=seg; else interim+=seg;
+          }
+          if(finalTxt){ base = (base ? base.replace(/\s+$/,"")+" " : "") + finalTxt.trim(); saveState(); }
+          ta.value = base + (interim ? (base?" ":"")+interim : "");
+        };
+        try{ rec.start(); }catch(e){ status.textContent="Röstinmatning kunde inte startas."; }
+      });
+    });
+  })();
 
   /* ---- Init ---- */
   // Autosparning av fritextsvar medan man skriver.
