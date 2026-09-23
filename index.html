@@ -436,10 +436,10 @@
         <div class="videoblock">
           <div class="vlabel">Film · MI</div>
           <p class="vtitle">Information i dialog</p>
-          <div class="video-frame" data-embed="https://qcnl.tv/e/_fVbICVNDzFU_gAewFn1Sg">
+          <div class="video-frame" data-embed="https://player.vimeo.com/video/1198748298?h=8b65e3d75a&autoplay=1">
             <button type="button" class="video-poster" aria-label="Spela filmen Information i dialog"><span class="vp-play"></span><span class="vp-text">Spela filmen</span></button>
           </div>
-          <p class="vcap">En kort film som visar fråga–ge–fråga i praktiken. Startar inte spelaren? <a href="https://qcnl.tv/p/_fVbICVNDzFU_gAewFn1Sg" target="_blank" rel="noopener">Öppna filmen i en ny flik</a>.</p>
+          <p class="vcap">En kort film som visar fråga–ge–fråga i praktiken. Startar inte spelaren? <a href="https://vimeo.com/1198748298/8b65e3d75a" target="_blank" rel="noopener">Öppna filmen i en ny flik</a>.</p>
         </div>
 
         <h2>Meny-agenda</h2>
@@ -455,10 +455,10 @@
         <div class="videoblock">
           <div class="vlabel">Film · MI</div>
           <p class="vtitle">Meny-agenda</p>
-          <div class="video-frame" data-embed="https://qcnl.tv/e/7BuS1PYrmlgqCBni6fhJjg">
+          <div class="video-frame" data-embed="https://player.vimeo.com/video/1198748310?h=cff5300236&autoplay=1">
             <button type="button" class="video-poster" aria-label="Spela filmen Meny-agenda"><span class="vp-play"></span><span class="vp-text">Spela filmen</span></button>
           </div>
-          <p class="vcap">En kort film som visar hur en meny-agenda byggs upp tillsammans. Startar inte spelaren? <a href="https://qcnl.tv/p/7BuS1PYrmlgqCBni6fhJjg" target="_blank" rel="noopener">Öppna filmen i en ny flik</a>.</p>
+          <p class="vcap">En kort film som visar hur en meny-agenda byggs upp tillsammans. Startar inte spelaren? <a href="https://vimeo.com/1198748310/cff5300236" target="_blank" rel="noopener">Öppna filmen i en ny flik</a>.</p>
         </div>
 
         <div class="tool">
@@ -973,7 +973,7 @@
       var src=frame.getAttribute("data-embed");
       var ifr=document.createElement("iframe");
       ifr.src=src; ifr.title=btn.getAttribute("aria-label")||"Film";
-      ifr.setAttribute("allow","fullscreen; autoplay"); ifr.setAttribute("allowfullscreen","");
+      ifr.setAttribute("allow","autoplay; fullscreen; picture-in-picture"); ifr.setAttribute("allowfullscreen","");
       frame.innerHTML=""; frame.appendChild(ifr);
     });
   });
